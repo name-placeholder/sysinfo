@@ -207,6 +207,9 @@ impl System {
             }
             if compute_cpu {
                 compute_cpu_usage(proc_, total_time, max_value);
+                for task in proc_.tasks.values_mut() {
+                    compute_cpu_usage(task, total_time, max_value)
+                }
             }
             proc_.updated = false;
             true
@@ -343,6 +346,9 @@ impl SystemExt for System {
             let max_cpu_usage = self.get_max_process_cpu_usage();
             if let Some(p) = self.process_list.tasks.get_mut(&pid) {
                 compute_cpu_usage(p, total_time / self.cpus.len() as f32, max_cpu_usage);
+                for (_, task) in &mut p.tasks {
+                    compute_cpu_usage(task, total_time / self.cpus.len() as f32, max_cpu_usage)
+                }
                 p.updated = false;
             }
         } else if let Some(p) = self.process_list.tasks.get_mut(&pid) {
